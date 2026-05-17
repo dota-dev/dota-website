@@ -1,23 +1,63 @@
+import { useState, useCallback, useEffect } from 'react';
 import SectionHeading from './SectionHeading';
 import { useReveal } from '../hooks/useReveal';
 
 /**
- * Base slides – duplicated once in the track for seamless -50% loop.
- * Multiple copies of image_0af24d keep the carousel full with no gaps.
+ * Add a new filename here — it will appear on the site automatically.
+ * Files live in: public/testimonials/
  */
-const BASE_SLIDES = [
-  { src: '/image_0af24d.png', alt: 'המלצת לקוח – תודעת ריפוי אקטיבית' },
-  { src: '/image_0af24d.png', alt: 'המלצת לקוח – תודעת ריפוי אקטיבית' },
-  { src: '/image_0af24d.png', alt: 'המלצת לקוח – תודעת ריפוי אקטיבית' },
-  { src: '/testimonials/placeholder-2.png', alt: 'המלצת לקוח' },
-  { src: '/testimonials/placeholder-3.png', alt: 'המלצת לקוח' },
+const testimonialImages = [
+  {
+    src: '/testimonials/noamaor.png',
+    alt: 'המלצת לקוח – תודעת ריפוי אקטיבית',
+  },
+  {
+    src: '/testimonials/image2.png',
+    alt: 'המלצת לקוח',
+  },
+  {
+    src: '/testimonials/image3.png',
+    alt: 'המלצת לקוח',
+  },
 ];
 
-/** Exact duplicate – animation moves -50% for a perfect infinite circle */
-const LOOP_SLIDES = [...BASE_SLIDES, ...BASE_SLIDES];
+const AUTO_PLAY_MS = 5000;
 
 export default function Testimonials() {
   const revealRef = useReveal();
+  const count = testimonialImages.length;
+  const hasLoop = count > 1;
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const goNext = useCallback(() => {
+    if (!hasLoop) return;
+    setActiveIndex((i) => (i + 1) % count);
+  }, [count, hasLoop]);
+
+  const goPrev = useCallback(() => {
+    if (!hasLoop) return;
+    setActiveIndex((i) => (i - 1 + count) % count);
+  }, [count, hasLoop]);
+
+  /* Auto-advance carousel (infinite circular loop when count > 1) */
+  useEffect(() => {
+    if (!hasLoop || isPaused) return;
+    const timer = setInterval(goNext, AUTO_PLAY_MS);
+    return () => clearInterval(timer);
+  }, [hasLoop, isPaused, goNext]);
+
+  /* Keyboard navigation */
+  useEffect(() => {
+    if (!hasLoop) return;
+    const onKey = (e) => {
+      if (e.key === 'ArrowRight') goPrev();
+      if (e.key === 'ArrowLeft') goNext();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [hasLoop, goNext, goPrev]);
 
   return (
     <section id="testimonials" className="overflow-hidden px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
@@ -26,52 +66,108 @@ export default function Testimonials() {
 
         <div ref={revealRef} className="reveal">
           <div
-            className="testimonial-marquee relative mx-auto max-w-5xl"
-            aria-label="גלריית המלצות מלקוחות – סרט נע מעגלי אינסופי"
+            className="testimonial-carousel-wrapper mx-auto max-w-lg"
             role="region"
+            aria-label="המלצות לקוחות"
+            aria-roledescription={hasLoop ? 'carousel' : undefined}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onFocus={() => setIsPaused(true)}
+            onBlur={() => setIsPaused(false)}
           >
-            <div className="testimonial-track">
-              {LOOP_SLIDES.map((slide, i) => (
-                <TestimonialSlide
-                  key={`${slide.src}-${i}`}
-                  slide={slide}
-                  ariaHidden={i >= BASE_SLIDES.length}
+            {hasLoop && (
+              <CarouselArrow direction="prev" onClick={goPrev} label="המלצה קודמת" />
+            )}
+
+            <div className="testimonial-viewport">
+              <div
+                className="testimonial-track"
+                style={
+                  hasLoop
+                    ? { transform: `translate3d(-${activeIndex * 100}%, 0, 0)` }
+                    : undefined
+                }
+              >
+                {testimonialImages.map((item) => (
+                  <TestimonialCard key={item.src} item={item} />
+                ))}
+              </div>
+            </div>
+
+            {hasLoop && (
+              <CarouselArrow direction="next" onClick={goNext} label="המלצה הבאה" />
+            )}
+          </div>
+
+          {hasLoop && (
+            <div className="testimonial-dots" role="tablist" aria-label="בחירת המלצה">
+              {testimonialImages.map((item, i) => (
+                <button
+                  key={item.src}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === activeIndex}
+                  aria-label={`המלצה ${i + 1}`}
+                  className={`testimonial-dot${i === activeIndex ? ' is-active' : ''}`}
+                  onClick={() => setActiveIndex(i)}
                 />
               ))}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </section>
   );
 }
 
-function TestimonialSlide({ slide, ariaHidden = false }) {
+/** Square card – tall screenshots scroll vertically inside the frame */
+function TestimonialCard({ item }) {
   return (
-    <div className="testimonial-slide shrink-0" aria-hidden={ariaHidden || undefined}>
-      <div className="testimonial-slide-frame overflow-hidden rounded-lg border border-border bg-surface-card">
-        <img
-          src={slide.src}
-          alt={ariaHidden ? '' : slide.alt}
-          className="testimonial-slide-img"
-          loading="lazy"
-          draggable="false"
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-            e.currentTarget.nextElementSibling?.classList.remove('hidden');
-          }}
-        />
-        <div className="testimonial-slide-fallback hidden" aria-hidden="true">
-          <svg className="h-8 w-8 text-text-muted/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-            />
-          </svg>
+    <div className="testimonial-slide">
+      <article className="testimonial-card">
+        <div className="testimonial-card-scroll">
+          <img
+            src={item.src}
+            alt={item.alt}
+            className="testimonial-card-img"
+            loading="lazy"
+            draggable={false}
+          />
         </div>
-      </div>
+      </article>
     </div>
+  );
+}
+
+function CarouselArrow({ direction, onClick, label }) {
+  return (
+    <button
+      type="button"
+      className={`testimonial-arrow testimonial-arrow--${direction}`}
+      onClick={onClick}
+      aria-label={label}
+    >
+      <ChevronIcon direction={direction} />
+    </button>
+  );
+}
+
+function ChevronIcon({ direction }) {
+  const isPrev = direction === 'prev';
+  return (
+    <svg
+      className="testimonial-arrow-icon"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      aria-hidden="true"
+    >
+      {isPrev ? (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+      ) : (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+      )}
+    </svg>
   );
 }
