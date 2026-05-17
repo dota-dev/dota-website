@@ -1,0 +1,271 @@
+@import 'tailwindcss';
+
+/* Brand gradient tokens */
+@theme {
+  --font-sans: 'Heebo', system-ui, sans-serif;
+
+  --color-brand-blue: #3b82f6;
+  --color-brand-purple: #8b5cf6;
+  --color-brand-green: #22c55e;
+  --color-brand-orange: #f97316;
+
+  --color-surface: #0a0a0f;
+  --color-surface-elevated: #12121a;
+  --color-surface-card: #16161f;
+  --color-border: #2a2a3a;
+  --color-text: #f4f4f5;
+  --color-text-muted: #a1a1aa;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface text-text font-sans antialiased overflow-x-hidden;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-brand-purple) 40%, transparent);
+    color: white;
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      135deg,
+      var(--color-brand-blue),
+      var(--color-brand-purple),
+      var(--color-brand-green),
+      var(--color-brand-orange)
+    );
+  }
+
+  .gradient-border {
+    position: relative;
+    background: var(--color-surface-card);
+    border-radius: 1rem;
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      var(--color-brand-blue),
+      var(--color-brand-purple),
+      var(--color-brand-green),
+      var(--color-brand-orange)
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .btn-gradient {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold text-white transition-all duration-300;
+    background: linear-gradient(
+      135deg,
+      var(--color-brand-blue),
+      var(--color-brand-purple),
+      var(--color-brand-green)
+    );
+    background-size: 200% 200%;
+  }
+
+  .btn-gradient:hover {
+    background-position: 100% 0;
+    @apply shadow-lg -translate-y-0.5;
+    box-shadow: 0 10px 40px -10px color-mix(in srgb, var(--color-brand-purple) 50%, transparent);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-border px-6 py-3 font-semibold text-text transition-all duration-300;
+  }
+
+  .btn-outline:hover {
+    @apply border-brand-purple text-white -translate-y-0.5;
+    box-shadow: 0 0 20px color-mix(in srgb, var(--color-brand-purple) 25%, transparent);
+  }
+
+  .section-padding {
+    @apply px-4 py-20 sm:px-6 lg:px-8 lg:py-28;
+  }
+
+  .container-narrow {
+    @apply mx-auto max-w-6xl;
+  }
+
+  .fade-in {
+    animation: fadeInUp 0.7s ease forwards;
+  }
+
+  .fade-in-delay-1 {
+    animation: fadeInUp 0.7s ease 0.1s forwards;
+    opacity: 0;
+  }
+
+  .fade-in-delay-2 {
+    animation: fadeInUp 0.7s ease 0.2s forwards;
+    opacity: 0;
+  }
+
+  .fade-in-delay-3 {
+    animation: fadeInUp 0.7s ease 0.3s forwards;
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Portfolio – symmetric compact cards */
+.portfolio-card {
+  max-width: 100%;
+}
+
+.portfolio-card-image {
+  aspect-ratio: 16 / 10;
+}
+
+/* Contact box – subtle thin gradient frame */
+.contact-box.gradient-border::before {
+  padding: 1px;
+  opacity: 0.85;
+}
+
+/* Testimonials – infinite seamless loop ("סרט נע מעגלי אינסופי") */
+.testimonial-marquee {
+  overflow: hidden;
+  padding: 0.5rem 0;
+  min-height: 11.5rem;
+  direction: ltr; /* stable translateX loop on RTL pages */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+}
+
+.testimonial-track {
+  display: flex;
+  width: max-content;
+  flex-wrap: nowrap;
+  gap: 1.25rem;
+  animation: testimonial-marquee 50s linear infinite;
+  will-change: transform;
+}
+
+/* Fixed slide dimensions – no collapse / empty gaps when images load */
+.testimonial-slide-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 13rem;
+  height: 10rem;
+}
+
+.testimonial-slide-img {
+  display: block;
+  max-height: 10rem;
+  max-width: 13rem;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
+.testimonial-slide-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 13rem;
+  height: 10rem;
+  background: var(--color-surface-elevated);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .testimonial-track {
+    animation-duration: 80s;
+  }
+}
+
+@keyframes testimonial-marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
