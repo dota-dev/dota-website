@@ -2,9 +2,8 @@ import SectionHeading from './SectionHeading';
 import { useReveal } from '../hooks/useReveal';
 
 /**
- * Symmetric 3-column portfolio.
- * Live project: screenshot from /projects/ + title as link.
- * Coming soon: dark placeholder frame with centered label.
+ * Symmetric portfolio grid – add projects here; each renders automatically.
+ * Images live in: public/projects/
  */
 const PROJECTS = [
   {
@@ -15,8 +14,15 @@ const PROJECTS = [
     imageAlt: 'צילום מסך – תודעת ריפוי אקטיבית',
     comingSoon: false,
   },
+  {
+    id: 'kesher-yironi',
+    title: 'קשר עירוני',
+    url: 'https://kesher-yironi.vercel.app/',
+    image: '/projects/kesher_ironi.png',
+    imageAlt: 'צילום מסך – קשר עירוני',
+    comingSoon: false,
+  },
   { id: 'soon-1', title: 'פרויקט בקרוב', comingSoon: true },
-  { id: 'soon-2', title: 'פרויקט בקרוב', comingSoon: true },
 ];
 
 export default function Portfolio() {

@@ -49,7 +49,7 @@ export default function Hero() {
 
           <p className="fade-in-delay-2 mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-text-muted sm:text-xl">
             פיתוח אתרים, מערכות ואפליקציות מותאמים אישית בקוד נקי, בשקיפות מלאה
-            ובאנושות מעל הכל. בלי פלטפורמות סגורות, בלי אותיות קטנות.
+            אנושיות מעל הכל. בלי פלטפורמות סגורות, בלי אותיות קטנות.
           </p>
 
           <div className="fade-in-delay-3 flex flex-col items-center justify-center gap-4 sm:flex-row">

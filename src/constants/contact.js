@@ -1,4 +1,4 @@
 /** Shared contact links */
-export const WHATSAPP_URL = 'https://wa.me/972555625994';
+export const WHATSAPP_URL = 'https://wa.me/972583200555';
 export const EMAIL = 'dota@dotadev.com';
-export const PHONE_DISPLAY = '+972 55-562-5994';
+export const PHONE_DISPLAY = '+972 58-320-0555';

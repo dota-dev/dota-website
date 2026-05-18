@@ -12,12 +12,8 @@ const testimonialImages = [
     alt: 'המלצת לקוח – תודעת ריפוי אקטיבית',
   },
   {
-    src: '/testimonials/image2.png',
-    alt: 'המלצת לקוח',
-  },
-  {
-    src: '/testimonials/image3.png',
-    alt: 'המלצת לקוח',
+    src: '/testimonials/lea.jpeg',
+    alt: 'המלצת לקוח – לאה',
   },
 ];
 
